@@ -1,21 +1,26 @@
 import React, { Component } from 'react';
 import { Text, View,StyleSheet } from 'react-native';
 import Notes from './Notes';
+import CustomHeader from './CustomHeader';
+import CustomAvatar from './CustomAvatar';
 
 
 export default class Jobs extends Component {
 
-  constructor(props){
-    super(props);
-     this.state={
-   
-               jobs:{
-                  images:null,
-                  notes:''
+      constructor(props){
+        super(props);
+        const { navigation } = this.props;
+         this.state={
+
+                   jobs:{
+                      images:null,
+                      notes:''
+                   },
+                   user_account:navigation.getParam('user_account'),
+                   avatar_source:navigation.getParam('avatar_source'),
                }
-           }
-  }
-  
+      }
+
          componentDidMount(){
                let list=[];
                let jobsAux= this.state.jobs;
@@ -44,19 +49,22 @@ export default class Jobs extends Component {
         }
 
 
-  render() {
-    return (
-      <View style={styles.container}>
-      { this.state.jobs.images!=null ? <Notes images={this.state.jobs.images}/> : <Text>Cargando Noticias...</Text>  }
-      </View>
-    );
-  }
+      render() {
+        return (
+          <View style={styles.container}>
+              <CustomHeader centerComponent={<CustomAvatar avatar_source={this.state.avatar_source} size={'medium'}/>}/>
+              { this.state.jobs.images!=null ? <Notes images={this.state.jobs.images} showMenu={false}/> : <Text>Cargando Trabajos...</Text>  }
+          </View>
+        );
+      }
 }
+
+
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
+        backgroundColor: '#A3A3A3',
     },
+
 });

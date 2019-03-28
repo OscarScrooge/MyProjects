@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import { Text, View,StyleSheet } from 'react-native';
 import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
-import AddNews from './AddNews';
 import Jobs from './Jobs';
 import News from './News';
+import MyNews from './MyNews';
 
 
 const TabNavigator = createBottomTabNavigator({
-  'Noticias': News,
-  'Trabajos': Jobs,
-  'Publicar Noticia': AddNews,
-
+  'Noticias': props => <News {...props}/>,
+  'Trabajos': props => <Jobs {...props}/>,
+  'MisNoticias': props => <MyNews {...props}/> ,
 });
+
 
 const Home = createAppContainer(TabNavigator);
 

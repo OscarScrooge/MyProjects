@@ -1,32 +1,31 @@
 import React,{Component} from  'react';
-import { Text, View,StyleSheet } from 'react-native';
+import { Text, View,StyleSheet} from 'react-native';
 import Notes from './Notes';
 import CustomHeader from './CustomHeader';
+import { Button } from 'react-native-elements';
 import CustomAvatar from './CustomAvatar';
+import AddNoteButton from './AddNoteButton'
 
-
-
-export default class News extends Component{
+export default class MyNews extends Component{
 
      constructor(props){
        super(props);
        const { navigation } = this.props;
-
         this.state={
-            news:{
+            myNews:{
                images:null,
                notes:''
             },
             user_account:navigation.getParam('user_account'),
             avatar_source:navigation.getParam('avatar_source'),
         }
-        console.log(this.state.avatar_source)
+
      }
 
      componentDidMount(){
              let list=[];
-             let newsAux= this.state.news;
-           for(var i=0;i<5;i++){
+             let newsAux= this.state.myNews;
+           for(var i=0;i<10;i++){
              this.getImages(list,newsAux);
            }
 
@@ -42,7 +41,7 @@ export default class News extends Component{
                          list.push({'url':responseJson.url});
                          newsAux.images=list;
                          this.setState({
-                            news:newsAux,
+                            myNews:newsAux,
                          });
                        })
                        .catch((error) => {
@@ -51,15 +50,24 @@ export default class News extends Component{
       }
 
      render(){
+          const { navigate } = this.props.navigation;
 
          return(
 
                   <View style={styles.container}>
-                      <CustomHeader
-                              centerComponent={<CustomAvatar avatar_source={this.state.avatar_source} size={'medium'}/>}
-                      />
+                    <CustomHeader
+                        leftComponent={<CustomAvatar avatar_source={this.state.avatar_source} size={'medium'}/>}
+                        centerComponent = {
+                                            <AddNoteButton
+                                                title={'Crea Noticia'}
+                                                navigate = {navigate}
+                                                view={'AddNews'}
+                                                user_account={this.state.user_account}
+                                            />
+                                          }
+                    />
+                    { this.state.myNews.images!=null ? <Notes images={this.state.myNews.images} showMenu={true}/> : <Text>Cargando Noticias...</Text>  }
 
-                    { this.state.news.images!=null ? <Notes images={this.state.news.images} showMenu={false}/> : <Text>Cargando Noticias...</Text>  }
                   </View>
 
          )

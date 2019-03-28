@@ -1,18 +1,14 @@
 import React, { Component } from 'react';
-import {Alert,
-        CameraRoll,
-        Text,
+import {
         View,
         StyleSheet,
         TextInput,
         Button ,
-        ScrollView,
-        PermissionsAndroid,
-        Image,TouchableOpacity} from 'react-native';
-import Camera from 'react-native-camera';
-import ShowCamera from './ShowCamera';
+        Image
+        } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import { Icon } from 'react-native-elements';
+import CustomHeader from './CustomHeader';
 
 
 const options = {
@@ -29,10 +25,21 @@ export default class AddNews extends Component {
 
   constructor(props){
       super(props);
+       const { navigation } = this.props;
       this.state={
           text:'',
-          pictureSource:null,
+          pictureDataB64:null,
+          myNew:{
+             id_user:navigation.getParam('user_account').id,
+             new:'lorem ipsum',
+             media_photos:'',
+             media_videos:'',
+             photos_url:'./news/dusers/'+navigation.getParam('user_account').user_name+navigation.getParam('user_account').email+'/content/',
+             videos_url:'',
+             pictureData:'',
+          },          
       }
+
   }
 
   handleLaunchCamera(){
@@ -46,16 +53,29 @@ export default class AddNews extends Component {
                console.log('ImagePicker Error: ', response.error);
 
              } else {
-               const source = { uri: response.uri };
 
-               // You can also display the image using data:
-               // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+               const source = { uri: 'data:'+response.type+';base64,' + response.data };
 
+               let myNewAux=this.state.myNew;               
+               myNewAux.media_photos=response.fileName;
+               myNewAux.pictureData= response.data;
                this.setState({
-                 pictureSource: source,
-               });
+                  myNew:myNewAux,
+                  pictureDataB64: source,
+               })
              }
      });
+  }
+
+  hanldeInput(text){
+
+     let n = this.state.myNew;
+     n.new = text;
+
+     this.setState({
+        myNew:n,
+     })
+
   }
 
   handleLaunchImageLibrary(){
@@ -68,70 +88,121 @@ export default class AddNews extends Component {
                    console.log('ImagePicker Error: ', response.error);
 
                  } else {
-                   const source = { uri: response.uri };
-
-                   // You can also display the image using data:
-                   // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-
-                   this.setState({
-                     pictureSource: source,
-                   });
+                   const source = { uri: 'data:'+response.type+';base64,' + response.data };
+                   
+                     let myNewAux=this.state.myNew;                         
+                         myNewAux.media_photos=response.fileName;
+                         myNewAux.pictureData= response.data;
+                         this.setState({
+                             myNew:myNewAux,
+                             pictureDataB64: source,
+                         })
                  }
          });
-
-
   }
+
+
+
+      handlePostData(){
+          console.log(this.state.myNew);
+          return fetch('http://192.168.1.69:8000/new/',
+            {
+              method:'POST',
+              headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json',
+                },
+              body: JSON.stringify(this.state.myNew)
+            }
+          ).then((response) => response.json())
+          .then((responseJson) => {
+                console.log('succes');
+                console.log(responseJson);
+                return responseJson;
+              })
+              .catch((error) => {
+              console.log('fail');
+                console.error(error);
+              });
+
+      }
 
   render() {
     return (
       <View style={styles.container}>
-       <Icon
-         name='camera'
-         type='font-awesome'
-         color='#517fa4'
-         onPress={()=>this.handleLaunchCamera()}
-       />
-        <Icon
-                name='image'
-                type='font-awesome'
-                color='#517fa4'
-                onPress={()=>this.handleLaunchImageLibrary()}
-              />
-          <TextInput  style={styles.textInputStyle} onChangeText={(text)=>this.setState({text})}/>
-        <Image source={this.state.pictureSource} style={styles.pictureViewer}/>
+           <CustomHeader title={''}/>
+           <View>
+               <View style={styles.containerTextInput}>
+                  <TextInput  style={styles.textInputStyle} onChangeText={(text)=>this.hanldeInput(text)}/>
+               </View>
+               {
+                 this.state.pictureDataB64!=null? <View style={styles.pictureViewerContainer}>
+                                             <Image source={this.state.pictureDataB64} style={styles.pictureViewer} />
+                                           </View>
+                                         : <View></View>
+               }
+
+               <View style={styles.containerPictureIcons}>
+                  <View style={styles.takePic}>
+                       <Icon
+                          name='camera'
+                          type='font-awesome'
+                          color='#517fa4'
+                          onPress={()=>this.handleLaunchCamera()}
+                       />
+                  </View>
+                  <View style={styles.galleryPic}>
+                       <Icon
+                       name='image'
+                       type='font-awesome'
+                       color='#517fa4'
+                       onPress={()=>this.handleLaunchImageLibrary()}
+                       />
+                  </View>
+               </View>
+               <Button
+                 onPress={()=>this.handlePostData()}
+                   title="send"
+               />
+           </View>
       </View>
 
     );
   }
 }
 const styles = StyleSheet.create({
-    container: {
+
+    container:{
         flex: 1,
         backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
+    },
+    containerPictureIcons:{
+        flexDirection: 'row',
+        justifyContent:'flex-end',
     },
     textInputStyle:{
-       width:'90%',
-       height: 200,
+       width:'100%',
+       height:'100%',
        borderColor: 'gray',
        borderWidth: 1,
     },
-     preview: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'center'
-      },
-      capture: {
-        flex: 0,
-        backgroundColor: '#fff',
-        borderRadius: 5,
-        color: '#000',
-        padding: 10,
-        margin: 40
-      },
-      pictureViewer:{
-         width:'100%',
-         height:300,
-      }
+    pictureViewerContainer:{
+       width:'20%',
+       height:100,
+    },
+    pictureViewer:{
+           width:'100%',
+           height:'100%',
+    },
+    takePic:{
+      padding:10
+    },
+    galleryPic:{
+      padding:10
+    },
+    containerTextInput:{
+      width:'100%',
+      height:200,
+      marginTop:20
+    }
 });

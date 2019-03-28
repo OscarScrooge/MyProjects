@@ -3,9 +3,9 @@ import {createStackNavigator, createAppContainer} from 'react-navigation';
 
 import Login from './components/Login';
 import Home from './components/Home';
-
-
-
+import SignIn from './components/SignIn';
+import AddNews from './components/AddNews';
+import MyNews from './components/MyNews';
 // export default class App extends React.Component{
 //
 //
@@ -19,7 +19,9 @@ import Home from './components/Home';
 const MainNavigator = createStackNavigator({
   Login: {screen: Login},
   Home: {screen: Home},
-  //News: {screen: News},
+  SignIn: {screen: SignIn},
+  AddNews : {screen : AddNews},
+  MyNews : {screen : MyNews},
 });
 
 const App = createAppContainer(MainNavigator);

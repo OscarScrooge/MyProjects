@@ -56,7 +56,7 @@ ROOT_URLCONF = 'snews_server.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['./news/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -81,7 +81,7 @@ DATABASES = {
             'NAME': 'mandroslabs_snews',
             'USER': 'mandroslabs',
             'PASSWORD': '314159265',
-            'HOST': 'localhost',
+            'HOST': '192.168.1.69',
             'PORT': '3306',
     }
 }
@@ -124,3 +124,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+ALLOWED_HOSTS = ['*']
