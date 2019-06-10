@@ -10,7 +10,7 @@ from django.db import models
 
 class Comments(models.Model):
     id_who_comment = models.ForeignKey('User', models.DO_NOTHING, db_column='id_who_comment')
-    comment = models.IntegerField()
+    comment = models.CharField(max_length=255)
     media_photo = models.CharField(max_length=255, blank=True, null=True)
     media_video = models.CharField(max_length=255, blank=True, null=True)
     on_create = models.DateTimeField(auto_now_add=True, null=True)

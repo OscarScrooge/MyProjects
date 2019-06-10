@@ -8,34 +8,56 @@ export default class extends Component{
      constructor(props){
          super(props);
          this.state={
-           images:this.props.images,
            showMenu:this.props.showMenu,
            showCommentBox:false,
-           comment:'',
            shareComment:false,
+           news_list : this.props.news_list,
+           user_account:this.props.user_account,
+           type_note:this.props.new,
+           newComment:{
+              id_new:'',
+              id_who_comment:this.props.user_account.id,
+              media_photo:'',
+              media_video:'',
+              comment:null,
+           }
          }
          this.handleShowCommentBox=this.handleShowCommentBox.bind(this);
          this.handleComment= this.handleComment.bind(this);
-          this.handleShareComment= this.handleShareComment.bind(this);
+         this.handleShareComment= this.handleShareComment.bind(this);
      }
 
-     handleShowCommentBox(status){
+     handleShowCommentBox(status,id_note){
+         let newComment = this.state.newComment;
+         newComment['id_new']= id_note;
+
          this.setState({
-           showCommentBox:status
-         });
+           newComment:newComment,
+           showCommentBox:status,
+         },()=>console.log(this.state.newComment));
      }
 
-     handleComment(status){
+     handleComment(text){
+           let newComment = this.state.newComment;
+           newComment['comment']= text
            this.setState({
-             comment:status
+             newComment:newComment,
            });
      }
 
      handleShareComment(status,showCommentBox){
-           this.setState({
-                  shareComment:status,
-                  showCommentBox:showCommentBox,
-           });
+           if(this.state.newComment.comment){
+
+              this.setState({
+                   shareComment:status,
+                   showCommentBox:showCommentBox,
+               },function(){
+                 if(this.state.shareComment){
+                   this.props.postComment(this.state.newComment);
+                 }
+               });
+           }
+
 
      }
 
@@ -44,17 +66,19 @@ export default class extends Component{
             <View style={styles.container}>
                 <ScrollView >
                     {
-                     this.state.images.map(
+                     this.state.news_list.map(
                         (item,index)=>
                           <NotesComponents
                               key={index}
-                              images={item}
+                              media_photos={{uri:item.media_photos}}
                               showMenu={this.state.showMenu}
                               handleShowCommentBox={this.handleShowCommentBox}
                               shareComment={this.state.shareComment}
-                              comment={this.state.comment}
+                              comment={this.state.newComment.comment}
                               handleComment={this.handleComment}
                               handleShareComment={this.handleShareComment}
+                              new_in_list={item.new}
+                              id_note={item.id}
                          />
                      )
                     }

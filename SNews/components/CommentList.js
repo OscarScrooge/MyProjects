@@ -21,7 +21,7 @@ export default class CommentList extends Component{
            <View style={styles.containerComments}>
              {this.state.comments.map(
                      (v,i)=>
-                          <Text key={i} style={styles.commentsBox}>{v}</Text>
+                          <Text key={i} style={styles.commentsBox}>{v.comment}</Text>
              )}
           </View>
          </View>

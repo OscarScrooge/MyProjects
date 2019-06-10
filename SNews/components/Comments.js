@@ -18,6 +18,7 @@ export default class Comments extends Component{
           arrowMarginTop:15,
           saySomething:false,
       }
+      this.handleNewComments=this.handleNewComments.bind(this);
     }
 
     componentDidMount(){
@@ -28,14 +29,17 @@ export default class Comments extends Component{
     }
 
     handleComments(){
-       let commentsAux=[];
-       for(var i=0;i<5;i++){
-         commentsAux.push('Sapien consequat sodales imperdiet at euismod gravida lorem sem laoreet id ullamcorper scelerisque torquent');
-       }
 
-       this.setState({
-          comments:commentsAux
-       });
+        return fetch('http:192.168.1.69:8000/comment/by/new/id/'+this.props.id_note)
+              .then((response) => response.json())
+              .then((responseJson) => {
+                     this.setState({
+                          comments:responseJson
+                     });
+                  })
+                 .catch((error) => {
+                      console.error(error);
+                 });
     }
 
     handleNewComments(){
@@ -45,6 +49,7 @@ export default class Comments extends Component{
          this.setState({
            comments: newComment,
          });
+
          this.props.handleShareComment(false,false);
 
     }
@@ -58,7 +63,7 @@ export default class Comments extends Component{
                  key:'up',
                  arrowMarginTop:21,
               })
-        this.props.handleShowCommentBox(true)
+        this.props.handleShowCommentBox(true,this.props.id_note)
 
      }else{
          this.setState({
@@ -67,7 +72,7 @@ export default class Comments extends Component{
                  key:'down',
                  arrowMarginTop:15,
               })
-         this.props.handleShowCommentBox(false)
+         this.props.handleShowCommentBox(false,this.props.id_note)
      }
     }
 

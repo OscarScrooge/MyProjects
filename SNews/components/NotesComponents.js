@@ -8,10 +8,12 @@ export default class extends Component{
      constructor(props){
          super(props);
          this.state={
-           images:this.props.images,
+           media_photos:this.props.media_photos,
            showMenu:this.props.showMenu,
+           new_in_list:this.props.new_in_list,
          }
      }
+
 
      render(){
         return(
@@ -19,13 +21,15 @@ export default class extends Component{
               <View style={styles.noteContainer}>
                   {this.state.showMenu ? <NoteMenu/> : <View/> }
                   <View style={styles.imageContainer}>
-                      <Image style = {styles.image}
-                          source={{ uri: this.state.images.url}}
-                      />
+
+                        <Image style = {styles.image}
+                                              source={this.state.media_photos}
+                                          />
+
                   </View>
 
                   <Text>
-                      Bacon ipsum dolor amet pancetta beef ribs picanha alcatra hamburger andouille
+                      {this.state.new_in_list}
                   </Text>
               </View>
               <View>
@@ -40,6 +44,7 @@ export default class extends Component{
                    comment={this.props.comment}
                    handleComment={this.props.handleComment}
                    handleShareComment={this.props.handleShareComment}
+                   id_note={this.props.id_note}
 
                />
               </View>

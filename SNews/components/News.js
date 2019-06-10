@@ -17,37 +17,51 @@ export default class News extends Component{
                images:null,
                notes:''
             },
+            news_list:null,
             user_account:navigation.getParam('user_account'),
             avatar_source:navigation.getParam('avatar_source'),
         }
-        console.log(this.state.avatar_source)
+
+        this.postComment=this.postComment.bind(this);
      }
 
      componentDidMount(){
-             let list=[];
-             let newsAux= this.state.news;
-           for(var i=0;i<5;i++){
-             this.getImages(list,newsAux);
-           }
-
-
+           this.getNewsList();
       }
 
-      getImages(list,newsAux){
+      getNewsList(){
+         return fetch('http://192.168.1.69:8000/new/list/')
+                .then((response) => response.json())
+                .then((responseJson) => {
+                    this.setState({
+                      news_list:responseJson,
+                    })
+                })
+                .catch((error) => {
+                     console.error(error);
+                });
+      }
 
-          return fetch('https://source.unsplash.com/random')
+      postComment(comment){
+           return fetch('http://192.168.1.69:8000/comment/',
+                   {
+                     method:'POST',
+                     headers: {
+                         Accept: 'application/json',
+                         'Content-Type': 'application/json',
+                       },
+                     body: JSON.stringify(comment)
+                   }
+                 ).then((response) => response.json())
+                 .then((responseJson) => {
+                       console.log(responseJson)
+                       return responseJson;
+                     })
+                     .catch((error) => {
+                       console.error(error);
+                     });
 
-                       .then((responseJson) => {
 
-                         list.push({'url':responseJson.url});
-                         newsAux.images=list;
-                         this.setState({
-                            news:newsAux,
-                         });
-                       })
-                       .catch((error) => {
-                         console.error(error);
-                       });
       }
 
      render(){
@@ -59,7 +73,16 @@ export default class News extends Component{
                               centerComponent={<CustomAvatar avatar_source={this.state.avatar_source} size={'medium'}/>}
                       />
 
-                    { this.state.news.images!=null ? <Notes images={this.state.news.images} showMenu={false}/> : <Text>Cargando Noticias...</Text>  }
+                    { this.state.news_list!=null ?
+                                                  <Notes
+                                                          showMenu={false}
+                                                          news_list={this.state.news_list}
+                                                          user_account={this.state.user_account}
+                                                          postComment={this.postComment}
+                                                  />
+
+                                                   :
+                                                    <Text>Cargando Noticias...</Text>  }
                   </View>
 
          )
